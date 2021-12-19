@@ -1,6 +1,10 @@
 {
     "extends": "@tsconfig/node14/tsconfig.json",
     "compilerOptions": {
+        /* Module */
+        "module": "es2020",
+        "moduleResolution": "node",
+
         /* Emit */
         "declaration": true,
         "outDir": "./dist",
