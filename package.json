@@ -11,7 +11,7 @@
     },
     "main": "src/index.js",
     "devDependencies": {
-        "@tsconfig/recommended": "^1.0.1",
+        "@tsconfig/node14": "^1.0.1",
         "@typescript-eslint/eslint-plugin": "^5.7.0",
         "@typescript-eslint/parser": "^5.7.0",
         "eslint": "^8.5.0",
