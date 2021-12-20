@@ -1,10 +1,6 @@
 {
-    "extends": "@tsconfig/node14/tsconfig.json",
+    "extends": "@tsconfig/recommended/tsconfig.json",
     "compilerOptions": {
-        /* Module */
-        "module": "es2020",
-        "moduleResolution": "node",
-
         /* Emit */
         "declaration": true,
         "outDir": "./dist",
@@ -13,7 +9,10 @@
         "strict": true,
         "noUnusedLocals": true,
         "noUnusedParameters": true,
-        "noFallthroughCasesInSwitch": true
+        "noFallthroughCasesInSwitch": true,
+
+        /* Interop Constraints */
+        "esModuleInterop": true
     },
     "include": ["src"]
 }
