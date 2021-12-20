@@ -25,7 +25,7 @@ export default class DatabaseItem<T extends CustomPage> {
             : undefined
 }
 
-type _Page = Exclude<QueryDatabaseResponse, { rollup: any }>['results'][number]
+type _Page = Extract<Exclude<QueryDatabaseResponse, { rollup: any }>['results'][number], { parent: any }>
 
 type PropertyTypeName = _Page['properties'][string]['type']
 
