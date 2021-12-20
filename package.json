@@ -9,7 +9,7 @@
         "node": "^12.20.0 || >=14.13.1"
     },
     "scripts": {
-        "test": "exit 0",
+        "test": "jest --coverage",
         "prepare": "husky install"
     },
     "main": "./dist/index.js",
