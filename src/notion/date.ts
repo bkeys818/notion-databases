@@ -1,4 +1,4 @@
-import type { ResponsePropertyType } from '../database/item'
+import type { ResponsePropertyType } from './database/item'
 
 export const dateNeedsUpdating = (
     notionDate: ResponsePropertyType<'date'>['date'] | null,

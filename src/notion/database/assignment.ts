@@ -1,6 +1,6 @@
 import DatabaseItem from './item'
 import type * as Canvas from '../../canvas'
-import { dateNeedsUpdating } from '../utils'
+import { dateNeedsUpdating } from '../date'
 
 export default class Assignment extends DatabaseItem<AssignmentProps> {
     constructor(

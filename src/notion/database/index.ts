@@ -1,6 +1,6 @@
 import { Client } from '@notionhq/client'
 import type { QueryDatabaseParameters } from '@notionhq/client/build/src/api-endpoints'
-import { getEntireList } from '../utils'
+import { getEntireList } from '../list'
 import type DatabaseItem from './item'
 import type { Page } from './item'
 
