@@ -1,6 +1,6 @@
 import DatabaseItem from './item'
 import type * as Canvas from '../../canvas'
-import { dateNeedsUpdating } from '../date'
+import { datesAreEqual } from '../date'
 
 export default class Assignment extends DatabaseItem<AssignmentProps> {
     constructor(
@@ -27,7 +27,7 @@ export default class Assignment extends DatabaseItem<AssignmentProps> {
     updateProps(assignment: Canvas.Assignment) {
         if (this.title != assignment.name) this.title = assignment.name
 
-        if (dateNeedsUpdating(this.dueDate, { start: assignment.due_at }))
+        if (datesAreEqual(this.dueDate, { start: assignment.due_at ?? undefined }))
             this.dueDate = assignment.due_at
                 ? { start: assignment.due_at, end: null, time_zone: null }
                 : null
