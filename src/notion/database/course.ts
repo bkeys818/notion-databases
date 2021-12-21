@@ -1,6 +1,6 @@
 import DatabaseItem from './item'
 import * as Canvas from '../../canvas'
-import { dateNeedsUpdating } from '../utils'
+import { datesAreEqual } from '../date'
 
 export default class Course extends DatabaseItem<CourseProps> {
     constructor(
@@ -19,14 +19,15 @@ export default class Course extends DatabaseItem<CourseProps> {
         if (
             !this.customProps.includes('Duration') &&
             course.start_at != null &&
-            dateNeedsUpdating(this.duration, {
+            datesAreEqual(this.duration, {
                 start: course.start_at,
-                end: course.end_at,
+                end: course.end_at ?? undefined,
             })
         )
             this.duration = {
                 start: course.start_at,
                 end: course.end_at,
+                time_zone: null
             }
 
         this.lastSynced = new Date()
@@ -66,10 +67,7 @@ export default class Course extends DatabaseItem<CourseProps> {
         return this.data.properties['Duration'].date
     }
     private set duration(
-        value: {
-            start: string
-            end: string | null
-        } | null
+        value: Course['data']['properties']['Duration']['date']
     ) {
         this.updatedProperties['Duration'] = { date: value }
     }

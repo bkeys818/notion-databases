@@ -1,5 +1,3 @@
-export * from './date'
-
 export function getEntireList<
     A extends {},
     R extends List<any>,
