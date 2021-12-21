@@ -29,7 +29,7 @@ export default class Assignment extends DatabaseItem<AssignmentProps> {
 
         if (dateNeedsUpdating(this.dueDate, { start: assignment.due_at }))
             this.dueDate = assignment.due_at
-                ? { start: assignment.due_at, end: null }
+                ? { start: assignment.due_at, end: null, time_zone: null }
                 : null
 
         if (
@@ -67,10 +67,7 @@ export default class Assignment extends DatabaseItem<AssignmentProps> {
         return this.data.properties['Due Date'].date
     }
     private set dueDate(
-        value: {
-            start: string
-            end: string | null
-        } | null
+        value: Assignment['data']['properties']['Due Date']['date']
     ) {
         this.updatedProperties['Due Date'] = { date: value }
     }

@@ -27,6 +27,7 @@ export default class Course extends DatabaseItem<CourseProps> {
             this.duration = {
                 start: course.start_at,
                 end: course.end_at,
+                time_zone: null
             }
 
         this.lastSynced = new Date()
@@ -66,10 +67,7 @@ export default class Course extends DatabaseItem<CourseProps> {
         return this.data.properties['Duration'].date
     }
     private set duration(
-        value: {
-            start: string
-            end: string | null
-        } | null
+        value: Course['data']['properties']['Duration']['date']
     ) {
         this.updatedProperties['Duration'] = { date: value }
     }
