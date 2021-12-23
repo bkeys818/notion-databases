@@ -4,7 +4,7 @@ import type {
     UpdatePageParameters,
 } from '@notionhq/client/build/src/api-endpoints'
 
-export default class DatabaseItem<T extends CustomPage> {
+export default class DatabaseItem<T extends CustomProps> {
     constructor(
         protected readonly data: Page<T>,
         private updatePage: Client['pages']['update']
@@ -29,7 +29,7 @@ type _Page = Extract<Exclude<QueryDatabaseResponse, { rollup: any }>['results'][
 
 type PropertyTypeName = _Page['properties'][string]['type']
 
-export type CustomPage = Record<string, PropertyTypeName>
+export type CustomProps = Record<string, PropertyTypeName>
 
 type Property = Extract<
     Extract<UpdatePageParameters['properties'], Record<string, any>>[string],
@@ -41,7 +41,7 @@ type RequestPropertyType<T extends PropertyTypeName> = Extract<
     Record<T, any>
 >
 
-export type PageProperties<P extends CustomPage> = {
+export type PageProperties<P extends CustomProps> = {
     [key in keyof P]: RequestPropertyType<P[key]>
 }
 
@@ -50,7 +50,7 @@ export type ResponsePropertyType<T extends PropertyTypeName> = Extract<
     Record<T, any>
 >
 
-export interface Page<T extends CustomPage> extends _Page {
+export interface Page<T extends CustomProps> extends _Page {
     properties: {
         [key in keyof T]: ResponsePropertyType<T[key]>
     }
