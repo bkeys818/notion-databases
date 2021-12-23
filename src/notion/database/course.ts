@@ -1,4 +1,4 @@
-import DatabaseItem, { SimpleProps, RequestPropertyType } from './item'
+import DatabaseItem, { SimpleProps } from './item'
 import * as Canvas from '../../canvas'
 import { datesAreEqual } from '../date'
 
@@ -30,14 +30,6 @@ export default class Course extends DatabaseItem<CourseProps, Canvas.Course> {
         })
     }
 
-    // static convertProps = (
-    //     course: Canvas.Course,
-    //     institution: string,
-    //     courseId: string
-    // ) => ({
-    //     Name: 
-    // }) as PageProperties<CourseProps>
-
     readonly canvasUrl = this.getValue('Canvas Url')!
     readonly customProps = (() => {
         const keys = Object.keys(this['data'].properties)
@@ -55,8 +47,7 @@ export default class Course extends DatabaseItem<CourseProps, Canvas.Course> {
     readonly canvasId = Canvas.extractId(this.canvasUrl)
     private readonly duration = this.getValue('Duration')
 
-    #error?: RequestPropertyType<'rich_text'>['rich_text']
-    set error(value: SyncError) {
+    setError(value: SyncError) {
         const errorLink = new URL(
             (process.env.NODE_ENV == 'development'
                 ? `http://localhost:5001`
@@ -67,12 +58,9 @@ export default class Course extends DatabaseItem<CourseProps, Canvas.Course> {
             const _value = value[key]
             if (_value) errorLink.searchParams.set(key, _value)
         }
-        this.#error = new Array({
-            text: {
-                content: value.type,
-                link: { url: errorLink.href },
-            },
-        })
+        return this.updateProp('Error', [
+            { text: { content: value.type, link: { url: errorLink.href } } },
+        ])
     }
 }
 
@@ -87,6 +75,10 @@ type CourseProps = {
 }
 
 interface SyncError {
-    type: 'missing property'
+    type: SyncErrorType
     value?: string
+}
+
+enum SyncErrorType {
+    missing = 'missing property'
 }

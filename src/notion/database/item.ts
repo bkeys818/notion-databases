@@ -11,9 +11,7 @@ export default class DatabaseItem<P extends CustomProps, D = any> {
         private updateProps: (data: D) => SimpleProps<P>
     ) {}
 
-    get id() {
-        return this.data.id
-    }
+    readonly id = this.data.id
 
     protected getValue<K extends keyof P>(name: K) {
         const prop = this.data.properties[name]
@@ -37,6 +35,19 @@ export default class DatabaseItem<P extends CustomProps, D = any> {
         if (Object.keys(props).length > 0)
             return this.updatePage({ page_id: this.id, properties: props })
     }
+
+    protected readonly updateProp = <K extends keyof P>(
+        name: K,
+        value: RequestPropertyType<P[K]>[P[K]]
+    ) =>
+        this.updatePage({
+            page_id: this.id,
+            properties: {
+                [name]: {
+                    [this.data.properties[name].type as P[K]]: value,
+                } as any,
+            },
+        })
 }
 
 export type SimpleProps<P extends CustomProps> = {
