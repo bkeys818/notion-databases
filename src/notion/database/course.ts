@@ -1,83 +1,61 @@
-import DatabaseItem from './item'
+import DatabaseItem, { SimpleProps, RequestPropertyType } from './item'
 import * as Canvas from '../../canvas'
 import { datesAreEqual } from '../date'
 
-export default class Course extends DatabaseItem<CourseProps> {
-    constructor(
-        data: DatabaseItem<CourseProps>['data'],
-        updatePage: DatabaseItem<any>['updatePage']
-    ) {
-        super(data, updatePage)
+export default class Course extends DatabaseItem<CourseProps, Canvas.Course> {
+    constructor(data: Course['data'], updatePage: Course['updatePage']) {
+        super(data, updatePage, course => {
+            const props: SimpleProps<CourseProps> = {}
+
+            if (!this.name || !this.customProps.includes('Name'))
+                props.Name = [{ text: { content: course.name } }]
+
+            if (
+                !this.customProps.includes('Duration') &&
+                course.start_at != null &&
+                datesAreEqual(this.duration, {
+                    start: course.start_at,
+                    end: course.end_at ?? undefined,
+                })
+            )
+                props.Duration = {
+                    start: course.start_at,
+                    end: course.end_at,
+                    time_zone: null,
+                }
+
+            props['Last Synced'] = { start: new Date().toISOString() }
+
+            return props
+        })
     }
 
-    updateProps(course: Canvas.Course) {
-        if (
-            !this.name ||
-            !this.customProps.includes('Name') 
-        ) this.name = course.name
+    // static convertProps = (
+    //     course: Canvas.Course,
+    //     institution: string,
+    //     courseId: string
+    // ) => ({
+    //     Name: 
+    // }) as PageProperties<CourseProps>
 
-        if (
-            !this.customProps.includes('Duration') &&
-            course.start_at != null &&
-            datesAreEqual(this.duration, {
-                start: course.start_at,
-                end: course.end_at ?? undefined,
-            })
-        )
-            this.duration = {
-                start: course.start_at,
-                end: course.end_at,
-                time_zone: null
-            }
-
-        this.lastSynced = new Date()
-    }
-
-    get canvasUrl() {
-        const { url } = this.data.properties['Canvas Url']
-        return url!
-    }
-
-    private get customProps() {
-        const keys = Object.keys(this.data.properties)
-        return this.data.properties['Custom Props'].multi_select
+    readonly canvasUrl = this.getValue('Canvas Url')!
+    readonly customProps = (() => {
+        const keys = Object.keys(this['data'].properties)
+        return this.getValue('Custom Props')
             .map(obj => obj.name)
             .filter((key): key is keyof Course['data']['properties'] =>
                 keys.includes(key)
             )
-    }
+    })()
+    private readonly name = (() => {
+        const name = this.getValue('Name')
+        if (name.length == 0) return null
+        else return name[0].plain_text
+    })()
+    readonly canvasId = Canvas.extractId(this.canvasUrl)
+    private readonly duration = this.getValue('Duration')
 
-    private get name() {
-        const title = this.data.properties.Name.title
-        if (title.length == 0) return null
-        else return title[0].plain_text
-    }
-    private set name(value: string | null) {
-        if (value)
-            this.updatedProperties.Name = {
-                title: [{ text: { content: value } }],
-            }
-    }
-
-    get canvasId() {
-        return Canvas.extractId(this.canvasUrl)
-    }
-
-    private get duration() {
-        return this.data.properties['Duration'].date
-    }
-    private set duration(
-        value: Course['data']['properties']['Duration']['date']
-    ) {
-        this.updatedProperties['Duration'] = { date: value }
-    }
-
-    private set lastSynced(value: Date) {
-        this.updatedProperties['Last Synced'] = {
-            date: { start: value.toISOString() },
-        }
-    }
-
+    #error?: RequestPropertyType<'rich_text'>['rich_text']
     set error(value: SyncError) {
         const errorLink = new URL(
             (process.env.NODE_ENV == 'development'
@@ -89,14 +67,12 @@ export default class Course extends DatabaseItem<CourseProps> {
             const _value = value[key]
             if (_value) errorLink.searchParams.set(key, _value)
         }
-        this.updatedProperties.Error = {
-            rich_text: new Array({
-                text: {
-                    content: value.type,
-                    link: { url: errorLink.href },
-                },
-            }),
-        }
+        this.#error = new Array({
+            text: {
+                content: value.type,
+                link: { url: errorLink.href },
+            },
+        })
     }
 }
 

@@ -1,44 +1,68 @@
 import { Client } from '@notionhq/client'
-import type { QueryDatabaseParameters } from '@notionhq/client/build/src/api-endpoints'
 import { getEntireList } from '../list'
 import type DatabaseItem from './item'
-import type { Page } from './item'
+import type { CustomProps, Page, PageProperties } from './item'
 
 import Course from './course'
 import Assignment from './assignment'
 export { Course, Assignment }
 
-export default class Database<T extends Course | Assignment> {
+export default class Database<
+    P extends CustomProps,
+    T extends DatabaseItem<P>,
+    CP extends ((...args: any[]) => PageProperties<P>) | undefined = undefined
+> {
     constructor(
-        private readonly item: DatabaseItemClass<T>,
+        private readonly itemClass: DatabaseItemClass<P, T, CP>,
         private readonly client: Client,
         private readonly id: string,
-        private readonly filter?: QueryDatabaseParameters['filter']
+        private readonly filter?: Parameters<
+            Client['databases']['query']
+        >[0]['filter']
     ) {}
 
-    items: T[] = []
+    readonly items: T[] = []
 
-    getItemsPromise = getEntireList({
+    readonly getItemsPromise = getEntireList({
         method: this.client.databases.query,
         database_id: this.id,
         page_size: 100,
         filter: this.filter,
     }).then(list => {
-        this.items = (list as Page<ExtractGeneric<T>>[]).map(
-            item => new this.item(item, this.client.pages.update)
+        this.items.push(
+            ...list.map(
+                item =>
+                    new this.itemClass(
+                        item as Page<P>,
+                        this.client.pages.update
+                    )
+            )
         )
     })
 
-    newItem = (props: T['updatedProperties']) => this.client.pages.create({
-        parent: { database_id: this.id },
-        properties: props as any
-    })
+    readonly newItem = (this.itemClass.convertProps
+        ? (...args: Parameters<Exclude<CP, undefined>>) =>
+              this.client.pages.create({
+                  parent: { database_id: this.id },
+                  properties: this.itemClass.convertProps!(...args),
+              })
+        : undefined) as CP extends undefined
+        ? undefined
+        : (
+              ...args: Parameters<Exclude<CP, undefined>>
+          ) => ReturnType<Client['pages']['create']>
 }
 
-type ExtractGeneric<T> = T extends DatabaseItem<infer G> ? G : never
-type DatabaseItemClass<T extends DatabaseItem<any>> = {
-    new(
-        data: DatabaseItem<ExtractGeneric<T>>['data'],
-        newItem: Client['pages']['update']
-    ): T
+interface DatabaseItemClass<
+    P extends CustomProps,
+    T extends DatabaseItem<P>,
+    CP extends ((...args: any[]) => PageProperties<P>) | undefined
+> {
+    new (...args: ExtendsDatabaseItem<P>): T
+    convertProps?: CP
 }
+
+export type ExtendsDatabaseItem<P extends CustomProps> = [
+    data: DatabaseItem<P>['data'],
+    newItem: DatabaseItem<P>['updatePage']
+]

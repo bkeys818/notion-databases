@@ -30,8 +30,7 @@ export default async function syncNotionAndCanvas(userData: UserData) {
         canvasId: Canvas.ItemId
     ) {
         const canvasCourse = await canvas.getCourse(canvasId)
-        notionCourse.updateProps(canvasCourse)
-        return [notionCourse.update()]
+        return [notionCourse.updateWith(canvasCourse)]
     }
 
     async function syncAssignments(
@@ -48,16 +47,13 @@ export default async function syncNotionAndCanvas(userData: UserData) {
                     assignment.canvasId ==
                     [canvasCourseId[0], canvasAssignment.id].join('/')
             )
-            if (notionAssignment) {
-                notionAssignment.updateProps(canvasAssignment)
-                return notionAssignment.update()
-            } else
+            if (notionAssignment)
+                return notionAssignment.updateWith(canvasAssignment)
+            else
                 return notion.assignments.newItem(
-                    Notion.Assignment.convertProps(
-                        canvasAssignment,
-                        canvasCourseId[0],
-                        notionCourse.id
-                    )
+                    canvasAssignment,
+                    canvasCourseId[0],
+                    notionCourse.id
                 )
         })
     }
