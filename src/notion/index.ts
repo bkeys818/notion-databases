@@ -9,7 +9,7 @@ export default class NotionClient {
         private readonly databaseIds: DatabaseIds
     ) {}
 
-    readonly courses = new Database<Course>(
+    readonly courses = new Database(
         Course,
         this.client,
         this.databaseIds.courses,
@@ -23,7 +23,7 @@ export default class NotionClient {
         }
     )
 
-    readonly assignments = new Database<Assignment>(
+    readonly assignments = new Database(
         Assignment,
         this.client,
         this.databaseIds.assignments,

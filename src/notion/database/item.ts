@@ -4,44 +4,76 @@ import type {
     UpdatePageParameters,
 } from '@notionhq/client/build/src/api-endpoints'
 
-export default class DatabaseItem<T extends CustomPage> {
+export default class DatabaseItem<P extends CustomProps, D = any> {
     constructor(
-        protected readonly data: Page<T>,
-        private updatePage: Client['pages']['update']
+        private readonly data: Page<P>,
+        private updatePage: Client['pages']['update'],
+        private updateProps: (data: D) => SimpleProps<P>
     ) {}
 
-    get id() {
-        return this.data.id
+    readonly id = this.data.id
+
+    protected getValue<K extends keyof P>(name: K) {
+        const prop = this.data.properties[name]
+        return prop[prop.type as P[K]]
     }
 
-    updatedProperties: Partial<PageProperties<T>> = {}
+    private formatProps(value: SimpleProps<P>) {
+        const response = {} as PageProperties<P>
+        let key: keyof P
+        for (key in value) {
+            const { type } = this.data.properties[key]
+            response[key] = { [type]: value[key] } as RequestPropertyType<
+                P[keyof P]
+            >
+        }
+        return response
+    }
 
-    update = () =>
-        Object.keys(this.updatedProperties).length > 0
-            ? this.updatePage({
-                  page_id: this.id,
-                  properties: this.updatedProperties as PageProperties<T>,
-              })
-            : undefined
+    updateWith(data: D) {
+        const props = this.formatProps(this.updateProps(data))
+        if (Object.keys(props).length > 0)
+            return this.updatePage({ page_id: this.id, properties: props })
+    }
+
+    protected readonly updateProp = <K extends keyof P>(
+        name: K,
+        value: RequestPropertyType<P[K]>[P[K]]
+    ) =>
+        this.updatePage({
+            page_id: this.id,
+            properties: {
+                [name]: {
+                    [this.data.properties[name].type as P[K]]: value,
+                } as any,
+            },
+        })
 }
 
-type _Page = Extract<Exclude<QueryDatabaseResponse, { rollup: any }>['results'][number], { parent: any }>
+export type SimpleProps<P extends CustomProps> = {
+    [K in keyof P]?: RequestPropertyType<P[K]>[P[K]]
+}
+
+type _Page = Extract<
+    Exclude<QueryDatabaseResponse, { rollup: any }>['results'][number],
+    { parent: any }
+>
 
 type PropertyTypeName = _Page['properties'][string]['type']
 
-export type CustomPage = Record<string, PropertyTypeName>
+export type CustomProps = Record<string, PropertyTypeName>
 
 type Property = Extract<
     Extract<UpdatePageParameters['properties'], Record<string, any>>[string],
     { type?: any }
 >
 
-type RequestPropertyType<T extends PropertyTypeName> = Extract<
+export type RequestPropertyType<T extends PropertyTypeName> = Extract<
     Property,
     Record<T, any>
 >
 
-export type PageProperties<P extends CustomPage> = {
+export type PageProperties<P extends CustomProps> = {
     [key in keyof P]: RequestPropertyType<P[key]>
 }
 
@@ -50,7 +82,7 @@ export type ResponsePropertyType<T extends PropertyTypeName> = Extract<
     Record<T, any>
 >
 
-export interface Page<T extends CustomPage> extends _Page {
+export interface Page<T extends CustomProps> extends _Page {
     properties: {
         [key in keyof T]: ResponsePropertyType<T[key]>
     }
