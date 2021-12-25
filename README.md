@@ -1,3 +1,3 @@
-# package-template-ts
+# notion-databases
 
-A typescript package template
+A tool for handling specific Notion databases

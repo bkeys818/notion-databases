@@ -1,10 +1,18 @@
 {
-    "name": "package-template-ts",
+    "name": "notion-databases",
     "version": "0.1.1",
-    "description": "A typescript package template",
-    "repository": "https://github.com/bkeys818/package-template-ts.git",
+    "description": "A tool for handling specific Notion databases",
+    "repository": "https://github.com/bkeys818/notion-databases.git",
     "author": "Ben Keys (https://github.com/bkeys818)",
     "license": "MIT",
+    "keywords": [
+        "notion",
+        "database",
+        "specific",
+        "type",
+        "property",
+        "properties"
+    ],
     "engines": {
         "node": "^12.20.0 || >=14.13.1"
     },
