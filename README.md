@@ -1,3 +1,3 @@
 # notion-databases
 
-A tool for handling specific Notion databases
+A tool for handling Notion databases with known properties
