@@ -1,69 +1,39 @@
-import CanvasClient, * as Canvas from './canvas'
-import NotionClient, * as Notion from './notion'
+import { getEntireList } from './list'
+import type { Client } from '@notionhq/client'
+import type { Item, CustomProps, ItemParams, Page, Properties } from './item'
+export { Item } from './item'
+export type { CustomProps, Page, Properties }
+export type { Property, PropertyType } from './item'
 
-export default async function syncNotionAndCanvas(userData: UserData) {
-    const canvas = new CanvasClient(userData.canvasTokens)
-    const notion = new NotionClient(
-        userData.notionAuthInfo.access_token,
-        userData.notionIds
-    )
+export class Database<P extends CustomProps, T extends Item<P>> {
+    constructor(
+        private readonly item: new (...args: ItemParams<P>) => T,
+        private readonly client: Client,
+        private readonly id: string,
+        private readonly filter?: Parameters<
+            Client['databases']['query']
+        >[0]['filter']
+    ) {}
 
-    await notion.courses.getItemsPromise
+    readonly items: T[] = []
 
-    const promiseArrays = await Promise.all(
-        notion.courses.items.flatMap(notionCourse => {
-            let canvasCourseId = Canvas.extractId(notionCourse.canvasUrl)
-
-            return [
-                syncCourse(notionCourse, canvasCourseId),
-                syncAssignments(notionCourse, canvasCourseId),
-            ] as const
-        })
-    )
-
-    const promises = promiseArrays.flatMap(value => value)
-
-    return await Promise.all<typeof promises[number]>(promises)
-
-    async function syncCourse(
-        notionCourse: Notion.Course,
-        canvasId: Canvas.ItemId
-    ) {
-        const canvasCourse = await canvas.getCourse(canvasId)
-        return [notionCourse.updateWith(canvasCourse)]
-    }
-
-    async function syncAssignments(
-        notionCourse: Notion.Course,
-        canvasCourseId: Canvas.ItemId
-    ) {
-        const [canvasAssignments] = await Promise.all([
-            canvas.getAssignments(canvasCourseId),
-            notion.assignments.getItemsPromise,
-        ])
-        return canvasAssignments.map(canvasAssignment => {
-            const notionAssignment = notion.assignments.items.find(
-                assignment =>
-                    assignment.canvasId ==
-                    [canvasCourseId[0], canvasAssignment.id].join('/')
+    readonly getItemsPromise = getEntireList({
+        method: this.client.databases.query,
+        database_id: this.id,
+        page_size: 100,
+        filter: this.filter,
+    }).then(list => {
+        this.items.push(
+            ...list.map(
+                item => new this.item(item as Page<P>, this.client.pages.update)
             )
-            if (notionAssignment)
-                return notionAssignment.updateWith(canvasAssignment)
-            else
-                return notion.assignments.newItem(
-                    canvasAssignment,
-                    canvasCourseId[0],
-                    notionCourse.id
-                )
+        )
+    })
+
+    newItem(properties: Partial<Properties<P>>) {
+        return this.client.pages.create({
+            parent: { database_id: this.id },
+            properties: properties as Properties<P>,
         })
     }
-}
-
-export interface UserData {
-    notionAuthInfo: Notion.AuthInfo
-    notionIds: Notion.DatabaseIds
-    canvasTokens: {
-        institution: string
-        token: string
-    }[]
 }
