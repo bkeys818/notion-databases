@@ -25,8 +25,7 @@
         "*.js": "eslint --cache --fix"
     },
     "dependencies": {
-        "@notionhq/client": "0.4.11",
-        "node-fetch": "^2.6.6"
+        "@notionhq/client": "0.4.11"
     },
     "devDependencies": {
         "@babel/core": "^7.16.5",
@@ -35,7 +34,6 @@
         "@tsconfig/recommended": "^1.0.1",
         "@types/jest": "^27.0.3",
         "@types/node": "^17.0.1",
-        "@types/node-fetch": "2.5.12",
         "@typescript-eslint/eslint-plugin": "^5.7.0",
         "@typescript-eslint/parser": "^5.7.0",
         "babel-jest": "^27.4.5",
