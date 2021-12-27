@@ -17,10 +17,14 @@
         "node": "^12.20.0 || >=14.13.1"
     },
     "scripts": {
+        "prepare": "husky install",
         "test": "exit 0; # jest --coverage",
-        "prepare": "husky install"
+        "build": "tsc"
     },
     "main": "./dist/index.js",
+    "files": [
+        "dist"
+    ],
     "lint-staged": {
         "*.js": "eslint --cache --fix"
     },
