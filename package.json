@@ -23,7 +23,8 @@
     },
     "main": "./dist/index.js",
     "files": [
-        "dist"
+        "dist",
+        "AUTHORS"
     ],
     "lint-staged": {
         "*.js": "eslint --cache --fix"
