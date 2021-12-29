@@ -3315,6 +3315,11 @@ normalize-path@^3.0.0:
   resolved "https://registry.yarnpkg.com/normalize-path/-/normalize-path-3.0.0.tgz#0dcd69ff23a1c9b11fd0978316644a0388216a65"
   integrity sha512-6eZs5Ls3WtCisHWp9S2GUy8dqkpGi4BVSz3GaqiE6ezub0512ESztXUwUB6C6IKbQkY2Pnb/mD4WYojCRwcwLA==
 
+notion-api-types@0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/notion-api-types/-/notion-api-types-0.1.0.tgz#2d51e7802eb536fc06801499b7ee5e489e1d0ae2"
+  integrity sha512-VdO5HQNpyyDUKSHlXLtFREElPnz8e60ecLhOtArG0sRzocs/aDuRQ3pyXU6yMM70aAc4Xspx50tqVMqsJ7esvw==
+
 npm-run-path@^4.0.1:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/npm-run-path/-/npm-run-path-4.0.1.tgz#b7ecd1e5ed53da8e37a55e1c2269e0b97ed748ea"
