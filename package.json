@@ -1,6 +1,6 @@
 {
     "name": "notion-databases",
-    "version": "0.1.1",
+    "version": "0.1.1-alpha.0",
     "description": "A tool for handling Notion databases with known properties",
     "repository": "https://github.com/bkeys818/notion-databases.git",
     "author": "Ben Keys (https://github.com/bkeys818)",
