@@ -1,6 +1,6 @@
 import { getEntireList } from './list'
-// import type { Client } from '@notionhq/client'
 import NotionClient from './request'
+export { NotionClient }
 import type { Item, CustomProps, ItemParams, Page, Properties } from './item'
 export { Item } from './item'
 export type { CustomProps, Page, Properties }
