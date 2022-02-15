@@ -62,7 +62,7 @@ async function request<T extends RequestTemplate | DirectRequest>(
     let urlStr: string
     if ('url' in args) urlStr = args.url
     else {
-        const url = new URL('https://api.notion.com/v1' + args.endpoint)
+        const url = new URL('https://api.notion.com/v1/' + args.endpoint)
         if (args.method == 'GET')
             for (const key in args.params)
                 url.searchParams.set(key, args.params[key].toString())
