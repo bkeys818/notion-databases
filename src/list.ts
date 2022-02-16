@@ -1,23 +1,16 @@
 import type { List } from 'notion-api-types/endpoints/global'
 
-export function getEntireList<
-    A extends {},
-    R extends List<any>,
-    T extends R['results'][number]
->(
-    args: {
-        method: (args: A) => Promise<R>
-    } & A
-): Promise<T[]> {
-    return loop()
-    async function loop(next_cursor?: string | null) {
-        const { method, ...params } = args
-        // @ts-ignore
-        params.next_cursor = next_cursor
-        const response = await method(params as unknown as A)
-        const list = response.results as T[]
-        if (next_cursor && response.has_more)
-            list.push(...(await loop(response.next_cursor)))
-        return list
+export async function getEntireList<
+    A extends { start_cursor?: string },
+    T,
+>(method: (args: A) => Promise<List<T>>, args: A): Promise<T[]> {
+    const list: T[] = []
+    async function requestPage(thisCursor?: string) {
+        args.start_cursor = thisCursor
+        const { results, next_cursor } = await method(args)
+        list.push(...results)
+        if (next_cursor) await requestPage(next_cursor)
     }
+    await requestPage()
+    return list
 }

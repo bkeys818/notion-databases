@@ -17,8 +17,8 @@ export class Database<P extends CustomProps, T extends Item<P>> {
 
     readonly items: T[] = []
 
-    readonly getItemsPromise = getEntireList({
-        method: this.client.database.query,
+    readonly getItemsPromise = getEntireList(
+        this.client.database.query, {
         database_id: this.id,
         page_size: 100,
         filter: this.filter
