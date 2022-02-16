@@ -1,6 +1,6 @@
 import { getEntireList } from './list'
-import NotionClient from './request'
-import type { Item, CustomProps, ItemParams, Page, Properties } from './item'
+import type { Item, NotionClient } from '.'
+import type { CustomProps, ItemParams, Page, Properties } from './item'
 import type { Filter } from 'notion-api-types/endpoints/databases/query'
 
 export default class Database<P extends CustomProps, T extends Item<P>> {

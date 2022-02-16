@@ -1,7 +1,7 @@
 import NotionClient from './request' 
 import type { NotionRequest, NotionResponse } from 'notion-api-types'
 
-export class Item<P extends CustomProps> {
+export default class Item<P extends CustomProps> {
     readonly properties: Page<P>['properties']
     private readonly id: Page<P>['id']
     protected readonly updatePage: NotionClient['pages']['update']
@@ -34,7 +34,7 @@ export type PropertyType = NonNullable<NotionRequest.PageProperty['type']>
 
 export type CustomProps = Record<string, PropertyType>
 
-export type Property<T extends PropertyType> = T extends T
+export type Property<T extends PropertyType = PropertyType> = T extends T
     ? Extract<NotionRequest.PageProperty, Record<T, any>>
     : never
 
