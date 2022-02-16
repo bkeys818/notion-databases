@@ -1,3 +1,5 @@
+import type { List } from 'notion-api-types/endpoints/global'
+
 export function getEntireList<
     A extends {},
     R extends List<any>,
@@ -18,11 +20,4 @@ export function getEntireList<
             list.push(...(await loop(response.next_cursor)))
         return list
     }
-}
-
-export interface List<T> {
-    object: 'list'
-    next_cursor: string | null
-    has_more: boolean
-    results: Array<T>
 }
