@@ -1,40 +1,37 @@
-import NotionClient from './request' 
+import { updatePage } from './api'
 import type { NotionRequest, NotionResponse } from 'notion-api-types'
 
-export class Item<P extends CustomProps> {
-    readonly properties: Page<P>['properties']
+export default class Item<P extends CustomProps> {
+    #props: Page<P>['properties']
+    protected get properties() {
+        return this.#props
+    }
+    private set properties(value: Page<P>['properties']) {
+        this.#props = value
+    }
     private readonly id: Page<P>['id']
-    protected readonly updatePage: NotionClient['pages']['update']
 
-    constructor(...[value, updatePage]: ItemParams<P>) {
-        this.properties = value.properties
+    constructor(private readonly token: string, value: Page<P>) {
+        this.#props = value.properties
         this.id = value.id
-        this.updatePage = updatePage
     }
 
-    // getProp<K extends keyof P>(name: K) {
-    //     const value = this.properties[name]
-    //     return value[value.type as P[K]]
-    // }
-
-    update(props: Partial<Properties<P>>) {
-        return this.updatePage({
+    async update(props: Partial<Properties<P>>) {
+        const page = await updatePage({
+            token: this.token,
             page_id: this.id,
-            properties: props as Properties<P>
+            properties: props as Properties<P>,
         })
+        this.properties = page.properties as Page<P>['properties']
+        return page
     }
 }
-
-export type ItemParams<P extends CustomProps> = [
-    data: Page<P>,
-    updatePage: Item<P>['updatePage']
-]
 
 export type PropertyType = NonNullable<NotionRequest.PageProperty['type']>
 
 export type CustomProps = Record<string, PropertyType>
 
-export type Property<T extends PropertyType> = T extends T
+export type Property<T extends PropertyType = PropertyType> = T extends T
     ? Extract<NotionRequest.PageProperty, Record<T, any>>
     : never
 
@@ -45,7 +42,7 @@ export type Properties<T extends CustomProps> = {
 export interface Page<P extends CustomProps> extends NotionResponse.Page {
     properties: {
         [K in keyof P]: P[K] extends P[K]
-        ? Extract<NotionResponse.PageProperty, Record<P[K], any>>
-        : never
+            ? Extract<NotionResponse.PageProperty, Record<P[K], any>>
+            : never
     }
 }
