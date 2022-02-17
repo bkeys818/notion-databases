@@ -27,7 +27,12 @@
         "AUTHORS"
     ],
     "lint-staged": {
-        "*.js": "eslint --cache --fix"
+        "*.ts": [
+            "prettier -w",
+            "eslint --cache"
+        ],
+        "*.md": "prettier -w",
+        "*.{json,jsonc}": "prettier -w"
     },
     "dependencies": {
         "@notionhq/client": "0.4.11",
