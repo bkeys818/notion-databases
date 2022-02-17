@@ -1,0 +1,15 @@
+{
+    "extends": "../tsconfig.json",
+    "compilerOptions": {
+        /* Emit */
+        "outDir": "../dist",
+        "declaration": true,
+        "inlineSourceMap": true,
+
+        /* Type Checking */
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noFallthroughCasesInSwitch": true
+    },
+    "exclude": ["../tests"]
+}
