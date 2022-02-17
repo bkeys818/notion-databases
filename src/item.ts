@@ -1,22 +1,29 @@
 import { updatePage } from './api'
-import type { Database } from '.'
 import type { NotionRequest, NotionResponse } from 'notion-api-types'
 
 export default class Item<P extends CustomProps> {
-    readonly properties: Page<P>['properties']
+    #props: Page<P>['properties']
+    protected get properties() {
+        return this.#props
+    }
+    private set properties(value: Page<P>['properties']) {
+        this.#props = value
+    }
     private readonly id: Page<P>['id']
 
-    constructor(private readonly database: Database<P>, value: Page<P>) {
-        this.properties = value.properties
+    constructor(private readonly token: string, value: Page<P>) {
+        this.#props = value.properties
         this.id = value.id
     }
 
-    update(props: Partial<Properties<P>>) {
-        return updatePage({
-            token: this.database['token'],
+    async update(props: Partial<Properties<P>>) {
+        const page = await updatePage({
+            token: this.token,
             page_id: this.id,
             properties: props as Properties<P>,
         })
+        this.properties = page.properties as Page<P>['properties']
+        return page
     }
 }
 
