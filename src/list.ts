@@ -1,9 +1,9 @@
 import type { List } from 'notion-api-types/endpoints/global'
 
-export async function getEntireList<
-    A extends { start_cursor?: string },
-    T,
->(method: (args: A) => Promise<List<T>>, args: A): Promise<T[]> {
+export async function getEntireList<A extends { start_cursor?: string }, T>(
+    method: (args: A) => Promise<List<T>>,
+    args: A
+): Promise<T[]> {
     const list: T[] = []
     async function requestPage(thisCursor?: string) {
         args.start_cursor = thisCursor
