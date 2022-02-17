@@ -1,26 +1,30 @@
+import { queryDatabase, createPage } from './api'
 import { getEntireList } from './list'
-import type { Item, NotionClient } from '.'
-import type { CustomProps, ItemParams, Page, Properties } from './item'
+import type { Item } from '.'
+import type { CustomProps, Page, Properties } from './item'
 import type { Filter } from 'notion-api-types/endpoints/databases/query'
 
-export default class Database<P extends CustomProps, T extends Item<P>> {
+export default class Database<P extends CustomProps> {
     constructor(
-        private readonly item: new (...args: ItemParams<P>) => T,
-        private readonly client: NotionClient,
+        private readonly item: new (
+            databse: Database<P>,
+            value: Page<P>
+        ) => Item<P>,
+        private readonly token: string,
         private readonly id: string,
         private readonly filter?: Filter
     ) {}
 
-    readonly items = getEntireList(this.client.database.query, {
+    readonly items = getEntireList(queryDatabase, {
+        token: this.token,
         database_id: this.id,
-        page_size: 100,
         filter: this.filter,
-    }).then(pages => pages.map((page) => 
-        new this.item(page as Page<P>, this.client.pages.update)
-    ))
+        page_size: 100,
+    }).then(pages => pages.map(page => new this.item(this, page as Page<P>)))
 
     newItem(properties: Partial<Properties<P>>) {
-        return this.client.pages.create({
+        return createPage({
+            token: this.token,
             parent: { database_id: this.id },
             properties: properties as Properties<P>,
         })
