@@ -17,6 +17,7 @@ async function request<T extends RequestTemplate | DirectRequest>(
         headers: {
             'Notion-Version': '2021-08-16',
             Authorization: `Bearer ${args.token}`,
+            'Content-Type': 'application/json',
         },
     }
 
