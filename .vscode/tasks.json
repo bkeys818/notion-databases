@@ -1,0 +1,45 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "tsc: build - src",
+            "type": "typescript",
+            "tsconfig": "src/tsconfig.json",
+            "problemMatcher": ["$tsc"],
+            "group": "build",
+            "presentation": {
+                "echo": false,
+                "reveal": "silent",
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": true,
+                "close": true
+            }
+        },
+        {
+            "label": "tsc: build - tests",
+            "type": "typescript",
+            "tsconfig": "tests/tsconfig.json",
+            "problemMatcher": ["$tsc"],
+            "group": "build",
+            "presentation": {
+                "echo": false,
+                "reveal": "silent",
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": true,
+                "close": true
+            }
+        },
+        {
+            "label": "tsc: build",
+            "dependsOn": ["tsc: build - src", "tsc: build - tests"],
+            "dependsOrder": "sequence",
+            "problemMatcher": ["$tsc"],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}

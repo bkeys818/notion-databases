@@ -1,0 +1,8 @@
+{
+    "extends": "@tsconfig/recommended/tsconfig.json",
+    "compilerOptions": {
+        /* Emit */
+        "inlineSourceMap": true
+    },
+    "exclude": ["../src"]
+}

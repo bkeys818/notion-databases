@@ -1,7 +1,6 @@
 dist
-
+tests/*.test.js
 # eslint
 .eslintcache
-
 # jest
 coverage
