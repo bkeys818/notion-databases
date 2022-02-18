@@ -4,9 +4,9 @@ import type { Item } from '.'
 import type { CustomProps, Page, Properties } from './item'
 import type { Filter } from 'notion-api-types/endpoints/databases/query'
 
-export default class Database<P extends CustomProps> {
+export default class Database<T extends Item<P>, P extends CustomProps> {
     constructor(
-        private readonly item: ItemClass<P>,
+        private readonly item: ItemClass<T, P>,
         private readonly token: string,
         private readonly id: string,
         private readonly filter?: Filter
@@ -33,7 +33,7 @@ export default class Database<P extends CustomProps> {
     }
 }
 
-type ItemClass<P extends CustomProps> = new (
+type ItemClass<T extends Item<P>, P extends CustomProps> = new (
     token: string,
     value: Page<P>
-) => Item<P>
+) => T
