@@ -6,10 +6,7 @@
             "type": "typescript",
             "tsconfig": "src/tsconfig.json",
             "problemMatcher": ["$tsc"],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
+            "group": "build",
             "presentation": {
                 "echo": false,
                 "reveal": "silent",
@@ -38,7 +35,11 @@
             "label": "tsc: build",
             "dependsOn": ["tsc: build - src", "tsc: build - tests"],
             "dependsOrder": "sequence",
-            "problemMatcher": ["$tsc"]
+            "problemMatcher": ["$tsc"],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
         }
     ]
 }
