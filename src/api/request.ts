@@ -1,5 +1,6 @@
 import fetch, { RequestInit } from 'node-fetch'
 import { URL } from 'url'
+import { NotionError, NotionErrorJson } from './error'
 import type { RequestTemplate } from 'notion-api-types/endpoints/global'
 
 export default request
@@ -36,30 +37,26 @@ async function request<T extends RequestTemplate | DirectRequest>(
     const res = await fetch(urlStr, init)
 
     if (res.ok) return await res.json()
-    else throw (await res.json()) as NotionError
+    else {
+        let error: Error
+        try {
+            const { code, message }: NotionErrorJson = await res.json()
+            let data = undefined
+            if (code == 'invalid_request_url')
+                data = { url: urlStr, method: args.method }
+            else if (code == 'invalid_json' && 'params' in args)
+                data = args.params
+            error = new NotionError(code, message, data)
+        } catch (err) {
+            error = new Error(
+                `Request failed! status: ${res.status}, statusText: ${res.statusText} `
+            )
+        }
+        throw error
+    }
 }
 
 interface DirectRequest {
     method: 'GET' | 'POST' | 'PATCH'
     url: string
-}
-
-export interface NotionError {
-    object: 'error'
-    status: number
-    code:
-        | 'invalid_json'
-        | 'invalid_request_url'
-        | 'invalid_request'
-        | 'validation_error'
-        | 'missing_version'
-        | 'unauthorized'
-        | 'restricted_resource'
-        | 'object_not_found'
-        | 'conflict_error'
-        | 'rate_limited'
-        | 'internal_server_error'
-        | 'service_unavailable'
-        | 'database_connection_unavailable'
-    message: string
 }
