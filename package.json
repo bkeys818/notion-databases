@@ -35,7 +35,6 @@
         "*.{json,jsonc}": "prettier -w"
     },
     "dependencies": {
-        "@notionhq/client": "0.4.11",
         "node-fetch": "^2.6.6",
         "notion-api-types": "0.4.2-alpha.1"
     },
