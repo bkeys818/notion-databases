@@ -10,7 +10,7 @@ async function request<T extends RequestTemplate>(
 async function request(args: DirectRequest & { token: string }): Promise<any>
 async function request<T extends RequestTemplate | DirectRequest>(
     args: T extends RequestTemplate
-        ? Omit<T, 'headers'> & { params?: any; token: string }
+        ? Omit<T, 'headers'> & { token: string }
         : T & { token: string }
 ) {
     const init: RequestInit = {

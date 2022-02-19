@@ -25,7 +25,7 @@ export default class Database<T extends Item<P>, P extends CustomProps> {
         const page = await createPage({
             token: this.token,
             parent: { database_id: this.id },
-            properties: properties as Properties<P>,
+            properties,
         })
         const item = new this.item(this.token, page as Page<P>)
         ;(await this.items).push(item)

@@ -16,11 +16,11 @@ export default class Item<P extends CustomProps> {
         this.id = value.id
     }
 
-    async update(props: Partial<Properties<P>>) {
+    async update(properties: Partial<Properties<P>>) {
         const page = await updatePage({
             token: this.token,
             page_id: this.id,
-            properties: props as Properties<P>,
+            properties,
         })
         this.properties = page.properties as Page<P>['properties']
         return page
