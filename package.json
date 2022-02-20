@@ -36,7 +36,7 @@
     },
     "dependencies": {
         "node-fetch": "^2.6.6",
-        "notion-api-types": "0.4.2-0"
+        "notion-api-types": "~0.4.2"
     },
     "devDependencies": {
         "@babel/core": "^7.16.5",
